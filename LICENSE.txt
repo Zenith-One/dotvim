@@ -1,4 +1,4 @@
-     DO WHAT THE FUCK YOU WANT TO WITH THIS REPO PUBLIC LICENSE
+        DO WHAT YOU WANT TO WITH THIS REPO PUBLIC LICENSE
                    Version 1337, November 2014
 
  Copyright (C) 2014 Craig Burton <craig-adam-burton@gmail.com>
@@ -9,7 +9,7 @@
  repository. Changing this license is allowed as long as the name 
  is changed. The same is true of the repository it lives in.
 
-     DO WHAT THE FUCK YOU WANT TO WITH THIS REPO PUBLIC LICENSE
+         DO WHAT YOU WANT TO WITH THIS REPO PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-  0. You just DO WHAT THE FUCK YOU WANT TO.
+  0. You just DO WHATEVER YOU WANT TO.
