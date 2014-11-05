@@ -3,7 +3,8 @@
 
 " Notes:  {
 "		- For vundle: git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-"
+"   - For windows: (as admin) mklink /H _vimrc .vim\dotvimrc 
+"     (or maybe the other way around - .vim\dotvimrc _vimrc)
 "
 " }
 
