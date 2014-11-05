@@ -6,7 +6,9 @@
 
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document, and the files contained in this 
- repository. Changing this license is allowed as long as the name 
+ repository, except for the ones that the author does not own, 
+ except as allowed by any applicable licenses associated with 
+ those files. Changing this license is allowed as long as the name 
  is changed. The same is true of the repository it lives in.
 
          DO WHAT YOU WANT TO WITH THIS REPO PUBLIC LICENSE
