@@ -1,11 +1,8 @@
-" vim: set foldmethod=marker foldmarker={,} foldlevel=0 foldlevelstart=0:
-" The above is a modeline. It makes fancy things happen.
-
 " Notes:  {
 "		- For vundle: git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-"   - For windows: (as admin) mklink /H _vimrc .vim\dotvimrc 
+"   - For windows: (as admin) mklink /H _vimrc .vim\dotvimrc
 "     (or maybe the other way around - .vim\dotvimrc _vimrc)
-"
+
 " }
 
 " Windows Compatibility {
@@ -49,8 +46,8 @@
 			elseif executable('ack')
 				Plugin 'mileszs/ack.vim'
 			endif
-		" }
 
+		" }
    " Bundles {
 			Plugin 'rking/ag.vim'
 			Plugin 'kien/ctrlp.vim'
@@ -65,6 +62,11 @@
 			Plugin 'altercation/vim-colors-solarized'
 			Plugin 'pangloss/vim-javascript'
 			Plugin 'jelera/vim-javascript-syntax'
+			Plugin 'tpope/vim-surround'
+			Plugin 'chrisbra/NrrwRgn'
+			Plugin 'Shougo/neocomplcache.vim'
+			" Plugin ''
+
 		" }
 
 		call vundle#end()
@@ -73,26 +75,12 @@
   " }
 " }
 " General settings {
-
 	" Old pathogen stuff {
 
 		" runtime! autoload/pathogen.vim
 		" silent! call pathogen\#helptags()
 		" silent! call pathogen#infect() " use pathogen
 		" silent! call pathogen\#runtime_append_all_bundles()
-
-	" }
-	" .vimrc stoofs {
-
-		" Source the vimrc file after saving it
-		if has("autocmd")
-			autocmd bufwritepost .vimrc source $MYVIMRC
-			autocmd bufwritepost _vimrc source $MYVIMRC
-			autocmd bufwritepost .vimrc normal :e!
-			autocmd bufwritepost _vimrc normal :e!
-		endif
-
-		nmap <leader>v :tabedit $MYVIMRC<CR>
 
 	" }
 	" Appearance {
@@ -125,14 +113,18 @@
 		set encoding=utf-8 " Necessary to show Unicode glyphs
 		set t_Co=256 " Explicitly tell Vim that the terminal supports 256 colors
 		" Use ~x on an English Windows version or ~n for French.
+		" Start vim at maximum window size
 		au GUIEnter * simalt ~x
 		set backspace=indent,eol,start " backspace through anything!
 
+		set shortmess=atI
+		set visualbell
+		set noerrorbells
 
 		if !exists('g:airline_symbols')
 			let g:airline_symbols = {}
 		endif
-	" let g:Powerline_symbols = 'fancy'
+
 		let g:airline_left_sep = '▒'
 		let g:airline_right_sep = '▒'
 		let g:airline#extensions#tabline#enabled = 1
@@ -142,7 +134,7 @@
 		let g:airline#extensions#tabline#right_sep = '▒'
 		let g:airline#extensions#tabline#right_alt_sep = '▒'
 
-		" reduce the listening time for things to something ore sensible
+		" reduce the listening time for things to something more sensible
 		set ttimeout
 		set ttimeoutlen=400
 		set gdefault
@@ -150,27 +142,27 @@
 		set autoread " when a file changes, reload it in buffer automagically
 
 		set omnifunc=syntaxcomplete#Complete
-	
+
 		" Modeline! {
 
 			" Enables modeline for overriding standard settings per file.
 			" This is mostly for this file.
 			set modeline
-			set modelines=3
+			set modelines=1
 
 		" }
 		" You WILL learn! {
-			"
+
 			" disable arrow keys. NO CRUTCHES!!
 			map <up> <nop>
 			map <down> <nop>
 			map <left> <nop>
 			map <right> <nop>
 
-			imap <up> <nop>
-			imap <down> <nop>
-			imap <left> <nop>
-			imap <right> <nop>
+			inoremap <up> <nop>
+			inoremap <down> <nop>
+			inoremap <left> <nop>
+			inoremap <right> <nop>
 		" }
 	" }
 	" Spaces & Tabs {
@@ -178,14 +170,15 @@
 		set shiftwidth=2 " number of
 		set tabstop=2  " number of visual spaces per TAB
 		set softtabstop=2 " number of spaces in tab when editing
-		set ai
+		set autoindent
+		set copyindent
 
 		" Use the same symbols as TextMate for tabstops and EOLs
 		set listchars=tab:☠\ ,eol:¬
 
 		" reselects visual block when indenting/unindenting
-		vmap < <gv
-		vmap > >gv
+		vnoremap < <gv
+		vnoremap > >gv
 
 	" }
 	" Folding {
@@ -194,11 +187,11 @@
 		set foldnestmax=10 " 10 nested fold max
 
 		" space toggles folds
-		nmap <space> za
+		nnoremap <space> za
 		" closes all folds
-		nmap <leader><leader><space> zM
+		nnoremap <leader><leader><space> zM
 		" opens all folds
-		nmap <leader><leader>' zR
+		nnoremap <leader><leader>' zR
 
 		set foldmethod=indent "fold based on indent level
 
@@ -234,16 +227,16 @@
 		set hlsearch " highlight matches
 
 		" turn off search highlight
-		nmap <leader><space> :nohlsearch<CR>
+		nnoremap <leader><space> :nohlsearch<CR>
 
 		" lists lines containing the word under the cursor
 		" type the line number followed by <CR> to jump
 		" to the corresponding line
-		nmap [I [I:
+		nnoremap [I [I:
 		xnoremap [I "vy:<C-u>ilist /<C-r>v<CR>:
 
 		" populates the command-line with this stub
-		nmap <leader>I :ilist /
+		nnoremap <leader>I :ilist /
 	" }
 	" Tmux {
 
@@ -267,90 +260,98 @@
 	" Misc Binds {
 
 		" move vertically by visual line
-		nmap j gj
-		nmap k gk
+		nnoremap j gj
+		nnoremap k gk
 
 		" shift + ctrl + J = split line
-		nmap <leader>j i<CR><esc>
+		nnoremap <leader>j i<CR><esc>
 
 		" C-j and C-k scroll up and down respectively
-		nmap <C-j> 10j
-		nmap <C-k> 10k
+		nnoremap <C-j> 10j
+		nnoremap <C-k> 10k
 
 		" move to the beginning/end of line
-		nmap B ^
-		nmap E $
+		nnoremap B ^
+		nnoremap E $
 
 		" also replace B and E as motions in commands ( e.g. dE -> d$ )
 		onoremap B ^
 		onoremap E $
 
 		" Make Y behave like other capitals
-		nmap Y y$
+		nnoremap Y y$
 
 		"$/^ doesn't do anything
-		nmap $ <nop>
-		nmap ^ <nop>
+		nnoremap $ <nop>
+		nnoremap ^ <nop>
 		onoremap $ <nop>
 		onoremap ^ <nop>
 
 		" highlight last inserted text
-		nmap gV `[v`]
+		nnoremap gV `[v`]
 
-		" imap jk <esc>
+		" inoremap jk <esc>
 		" ^ above disabled because I rebound Caps Lock to escape using AutoHotkey
 
 		" save with ctrl + s
-		nmap <C-s> :w<CR>h
+		nnoremap <C-s> :w<CR>h
+
+		" why so shifty?
+		nnoremap ; :
+		" also, UNLEARN!
+		nnoremap : <nop>
 
 		" CTRL+space now opens completion options
-		imap <C-space> <C-x><C-o>
+		inoremap <C-space> <C-x><C-o>
 	" }
 	" Leader Shortcuts {
-		nmap <leader>u :GundoToggle<CR>
+		nnoremap <leader>u :GundoToggle<CR>
+
+		" Edit mah vimrc!
+		nnoremap <leader>v :vsplit $MYVIMRC<CR>
 
 		" insert blank lines
-		nmap <leader>o o<esc>k"_D
-		nmap <leader>O O<esc>j"_D
+		nnoremap <leader>o o<esc>"_Dk
+		nnoremap <leader>O O<esc>"_Dj
 
-		nmap <leader>q :q<cr>
+		nnoremap <leader>q :q<cr>
 
 		" save session
-		nmap <leader>s :mksession<CR>
+		nnoremap <leader>s :mksession<CR>
 
 		" toggles display of hidden characters such as tabs and line ends
-		nmap <leader>l :set list!<CR>
+		nnoremap <leader>l :set list!<CR>
 		" open ag.vim
-		" nmap <leader>a :Ag
+		" nnoremap <leader>a :Ag
 
-		nmap <leader>r :set relativenumber!<cr>
+		nnoremap <leader>r :set relativenumber!<cr>
 
 		" NERDtree toggle
-		nmap <leader>n :NERDTreeToggle<CR>
+		nnoremap <leader>n :NERDTreeToggle<CR>
 
 		" quickly change to next window
-		nmap <leader>w <C-w><C-w>
+		nnoremap <leader>w <C-w><C-w>
 
 		" quickly change to next buffer
-		nmap <leader>b :bn<CR>
+		nnoremap <leader>b :bn<CR>
 
 		" easily access system clipboard buffer
-		vmap <Leader>y "+y
-		vmap <Leader>d "+d
-		nmap <Leader>yy "+yy
-		nmap <Leader>dd "+dd
-		nmap <Leader>p "+p
-		nmap <Leader>P "+P
-		vmap <Leader>p "+p
-		vmap <Leader>P "+P
+		vnoremap <Leader>y "+y
+		vnoremap <Leader>d "+d
+		nnoremap <Leader>yy "+yy
+		nnoremap <Leader>dd "+dd
+		nnoremap <Leader>p "+p
+		nnoremap <Leader>P "+P
+		vnoremap <Leader>p "+p
+		vnoremap <Leader>P "+P
 
 		" move lines up and down
-		nmap <leader>lj :m .+1<CR>==
-		nmap <leader>lk :m .-2<CR>==
-		imap <leader>lj <Esc>:m .+1<CR>==gi
-		imap <leader>lk <Esc>:m .-2<CR>==gi
-		vmap <leader>lj :m '>+1<CR>gv=gv
-		vmap <leader>lk :m '<-2<CR>gv=gv''
+		nnoremap <leader>lj :m .+1<CR>==
+		nnoremap <leader>lk :m .-2<CR>==
+		inoremap <leader>lj <Esc>:m .+1<CR>==gi
+		inoremap <leader>lk <Esc>:m .-2<CR>==gi
+		vnoremap <leader>lj :m '>+1<CR>gv=gv
+		vnoremap <leader>lk :m '<-2<CR>gv=gv''
 
 		" Remove White Space
 		nnoremap <Leader>rws :%s:\s\+$::<CR>:let @/=''<cr>
@@ -373,17 +374,56 @@
 	" }
 	" TComment {
 		" toggle comment
-		nmap <leader>c :TComment<CR>
+		nnoremap <leader>c :TComment<CR>
 	" }
 	" syntactical sugar {
 		let g:used_javascript_libs = 'angularjs'
 
-		" make json files use javascript highlighting
-		autocmd BufNewFile,BufRead *.json set ft=javascript
-
-		" let's pretend .jsp files are html.
-		autocmd BufNewFile,BufRead *.jsp set ft=html
 	" }
+" }
+" AutoCmd stuff {
+
+		" Source the vimrc file after saving it
+		if has("autocmd")
+			augroup vimrc " {
+				au!
+				autocmd bufwritepost .vimrc source $MYVIMRC | AirlineRefresh
+				autocmd bufwritepost _vimrc source $MYVIMRC | AirlineRefresh
+				" autocmd bufwritepost .vimrc normal :e!
+				" autocmd bufwritepost _vimrc normal :e!
+				autocmd FileType vim
+					\ setlocal foldmethod=marker |
+					\ setlocal foldmarker={,} |
+					\ setlocal foldlevel=0 |
+					\ setlocal foldlevelstart=0 |
+					\ setlocal nowrap
+			augroup END " }
+
+			augroup syntaxThings " {
+				au!
+				" make json files use javascript highlighting
+				autocmd BufNewFile,BufRead *.json set ft=javascript
+
+				" let's pretend .jsp files are html.
+				autocmd BufNewFile,BufRead *.jsp set ft=html
+			augroup END " }
+
+			" auto remove whitespace on buffer save
+			autocmd! BufWrite * mark ' | silent! %s/\s\+$// | norm ''
+
+			augroup speelnig " {
+				au!
+				" Turn on spell check for certain filetypes automatically
+				autocmd BufRead,BufNewFile *.md setlocal spell spelllang=en_us
+				" autocmd BufRead,BufNewFile *.txt setlocal spell spelllang=en_us
+				autocmd FileType gitcommit setlocal spell spelllang=en_us
+			augroup END " }
+		endif
+
+
+
+
+
 " }
 " Custom Functions {
 
@@ -403,10 +443,10 @@
 	function! PopupMenuLikeIDE() " {
 			if exists('+insert_expand')
 					set completeopt=longest,menuone
-					imap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-					imap <expr> <C-n> pumvisible() ? '<C-n>' :
+					inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>
+					inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
 											\ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-					imap <expr> <M-,> pumvisible() ? '<C-n>' :
+					inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
 											\ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
 			endif
 	endfunction
@@ -417,24 +457,24 @@
 	function! OmniPopup(action) " {
 			if pumvisible()
 					if a:action == 'j'
-							return "\<C-N>"
+							return "\<C-N>
 					elseif a:action == 'k'
-							return "\<C-P>"
+							return "\<C-P>
 					endif
 			endif
 			return a:action
 	endfunction
-	imap <silent>j <C-R>=OmniPopup('j')<CR>
-	imap <silent>k <C-R>=OmniPopup('k')<CR>
+	inoremap <silent>j <C-R>=OmniPopup('j')<CR>
+	inoremap <silent>k <C-R>=OmniPopup('k')<CR>
 	" }
 
 	" :Reg shows the list of recent registers. Entering the register name
 	"			 will paste that register's contents
 	function! Reg() " {
 			reg
-			echo "Register: "
+			echo "Register:
 			let char = getchar()
-			execute "normal! \"".nr2char(char)."p"
+			execute "normal! \"".nr2char(char)."p
 			redraw
 			normal! k
 	endfunction
@@ -452,10 +492,10 @@
 			endif
 
 			exec "normal! c" . name
-			exec "normal! Ovar " . name . " = "
-			exec "normal! pa;"
+			exec "normal! Ovar " . name . " =
+			exec "normal! pa;
 	endfunction
-	vmap <Leader>var :call ExtractLocalVariable()<CR>
+	vnoremap <Leader>var :call ExtractLocalVariable()<CR>
 	" }
 
 
@@ -478,7 +518,7 @@
 			if argc() != 0
 					return
 			endif
-			let session_fl = getcwd()."/.session.vim"
+			let session_fl = getcwd()."/.session.vim
 			if filereadable(session_fl)
 					let load_sesssion = confirm("Load session from '".session_fl."'?", "&yes\n&no\nload and delete\ndelete", 1)
 					if load_sesssion == 1 || load_sesssion == 3
@@ -502,7 +542,10 @@
 			if expand("%") =~# '\(^\|/\)\.git/' | return | endif
 			execute "normal! g`\"" |
 	endfunction
-	autocmd BufReadPost * call s:JumpToLastKnownCursorPosition()
+	augroup latcursor
+		au!
+		autocmd BufReadPost * call s:JumpToLastKnownCursorPosition()
+	augroup END
 	" }
 
 	" Searches the character passed from the starting column on a visual block and aligns the lines to it. {
@@ -530,15 +573,15 @@
 					if search(a:string, 'c', line('.')) != 0
 							let delta_col = (l:max_column - col('.'))
 							if delta_col > 0
-									exe "normal ".delta_col."i "
+									exe "normal ".delta_col."i 
 							endif
 					endif
 			endfor
 			call setpos('.', l:cursor_save)
 	endfunction
 	command! -nargs=1 -range Align '<,'>call Align(<f-args>)
-	vmap <leader>: :Align :<CR>
-	vmap <leader>= :Align =<CR>
+	vnoremap <leader>: :Align :<CR>
+	vnoremap <leader>= :Align =<CR>
 	" }
 
 	" :CMD copies the last command to system clipboard {
