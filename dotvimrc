@@ -37,6 +37,7 @@
 		  Plugin 'gmarik/vundle'
 			Plugin 'MarcWeber/vim-addon-mw-utils'
 			Plugin 'tomtom/tlib_vim'
+			Plugin 'Shougo/vimproc'
 			if executable('ag')
 				Plugin 'mileszs/ack.vim'
 				let g:ackprg = 'ag --nogroup --nocolor --column --smart-case'
@@ -61,10 +62,14 @@
 			Plugin 'bling/vim-airline'
 			Plugin 'altercation/vim-colors-solarized'
 			Plugin 'pangloss/vim-javascript'
+			Plugin 'nathanaelkane/vim-indent-guides'
 			Plugin 'jelera/vim-javascript-syntax'
 			Plugin 'tpope/vim-surround'
 			Plugin 'chrisbra/NrrwRgn'
-			Plugin 'Shougo/neocomplcache.vim'
+			Plugin 'Shougo/neocomplete.vim'
+			Plugin 'Raimondi/delimitMate'
+			Plugin 'scrooloose/syntastic'
+			Plugin 'Shougo/vimshell.vim'
 			" Plugin ''
 
 		" }
@@ -303,6 +308,9 @@
 
 		" CTRL+space now opens completion options
 		inoremap <C-space> <C-x><C-o>
+
+		" <C-c> enters an empty line
+		inoremap <C-c> <CR><Esc>O
 	" }
 	" Leader Shortcuts {
 		nnoremap <leader>u :GundoToggle<CR>
@@ -355,6 +363,9 @@
 
 		" Remove White Space
 		nnoremap <Leader>rws :%s:\s\+$::<CR>:let @/=''<cr>
+
+		" VimShell
+		nnoremap <leader>sh :VimShell<cr>
 	" }
 " }
 " Plugin Configs {
@@ -375,10 +386,51 @@
 	" TComment {
 		" toggle comment
 		nnoremap <leader>c :TComment<CR>
+		vnoremap <leader>c :TComment<CR>
 	" }
 	" syntactical sugar {
-		let g:used_javascript_libs = 'angularjs'
+		let g:used_javascript_libs = 'angularjs,jasmine'
 
+	" }
+	" Syntastic {
+
+		let g:syntastic_check_on_open = 1
+
+
+	" }
+	" NeoComplete {
+		let g:acp_enableAtStartup = 0
+		let g:neocomplete#enable_at_startup = 1
+		let g:neocomplete#enable_smart_case = 1
+		let g:neocomplete#sources#syntax#min_keyword_length = 3
+
+		" Recommended key-mappings.
+		" <CR>: close popup and save indent.
+		inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+		function! s:my_cr_function()
+		  " return neocomplete#close_popup() . "\<CR>"
+			" For no inserting <CR> key.
+			return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+		endfunction
+		" <TAB>: completion.
+		inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+		" <C-h>, <BS>: close popup and delete backword char.
+		inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+		inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+		inoremap <expr><C-y>  neocomplete#close_popup()
+		inoremap <expr><C-e>  neocomplete#cancel_popup()
+
+		" Enable omni completion.
+		autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+		autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+		autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+		autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+		autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+		" Enable heavy omni completion.
+		if !exists('g:neocomplete#sources#omni#input_patterns')
+			let g:neocomplete#sources#omni#input_patterns = {}
+		endif
 	" }
 " }
 " AutoCmd stuff {
@@ -455,26 +507,31 @@
 
 	" make j and k movement keys in the omnipopup
 	function! OmniPopup(action) " {
-			if pumvisible()
-					if a:action == 'j'
-							return "\<C-N>
-					elseif a:action == 'k'
-							return "\<C-P>
-					endif
+		if pumvisible()
+			if a:action == 'j'
+				return "\<C-N>"
+			elseif a:action == 'k'
+				return "\<C-P>"
+			elseif a:action == 'tab'
+				return "\<C-N>"
 			endif
-			return a:action
+		elseif a:action == 'tab'
+			return "\<tab>"
+		endif
+		return a:action
 	endfunction
-	inoremap <silent>j <C-R>=OmniPopup('j')<CR>
-	inoremap <silent>k <C-R>=OmniPopup('k')<CR>
+	inoremap <silent><tab> <C-R>=OmniPopup('tab')<CR>
+	" inoremap <silent>j <C-R>=OmniPopup('j')<CR>
+	" inoremap <silent>k <C-R>=OmniPopup('k')<CR>
 	" }
 
 	" :Reg shows the list of recent registers. Entering the register name
 	"			 will paste that register's contents
 	function! Reg() " {
 			reg
-			echo "Register:
+			echo "Register:"
 			let char = getchar()
-			execute "normal! \"".nr2char(char)."p
+			execute "normal! \"".nr2char(char)."p"
 			redraw
 			normal! k
 	endfunction
@@ -530,8 +587,8 @@
 			endif
 	endfunction
 
-	au VimLeavePre * call SaveSession()
-	au VimEnter * call LoadSession()
+	" au VimLeavePre * call SaveSession()
+	" au VimEnter * call LoadSession()
 	" }
 
 	" function says it all. Happens on buffer load
@@ -573,7 +630,7 @@
 					if search(a:string, 'c', line('.')) != 0
 							let delta_col = (l:max_column - col('.'))
 							if delta_col > 0
-									exe "normal ".delta_col."i 
+									exe "normal ".delta_col."i "
 							endif
 					endif
 			endfor
