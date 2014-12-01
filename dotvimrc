@@ -65,7 +65,6 @@
 			Plugin 'nathanaelkane/vim-indent-guides'
 			Plugin 'jelera/vim-javascript-syntax'
 			Plugin 'tpope/vim-surround'
-			Plugin 'chrisbra/NrrwRgn'
 			Plugin 'Shougo/neocomplete.vim'
 			Plugin 'Raimondi/delimitMate'
 			Plugin 'scrooloose/syntastic'
@@ -112,6 +111,7 @@
 	" Misc {
 
 		let mapleader=","	" leader is comma
+		nnoremap \ ,
 
 		" call pathogen#runtime_append_all_bundles() " really, use pathogen
 		set laststatus=2   " Always show the statusline
@@ -122,9 +122,11 @@
 		au GUIEnter * simalt ~x
 		set backspace=indent,eol,start " backspace through anything!
 
+		" No beeping or flashing, please
+		set noerrorbells visualbell t_vb=
+		autocmd GUIEnter * set visualbell t_vb=
+
 		set shortmess=atI
-		set visualbell
-		set noerrorbells
 
 		if !exists('g:airline_symbols')
 			let g:airline_symbols = {}
@@ -269,11 +271,11 @@
 		nnoremap k gk
 
 		" shift + ctrl + J = split line
-		nnoremap <leader>j i<CR><esc>
+		" nnoremap <leader>j i<CR><esc>
 
 		" C-j and C-k scroll up and down respectively
-		nnoremap <C-j> 10j
-		nnoremap <C-k> 10k
+		" nnoremap <C-j> 10j
+		" nnoremap <C-k> 10k
 
 		" move to the beginning/end of line
 		nnoremap B ^
@@ -301,16 +303,16 @@
 		" save with ctrl + s
 		nnoremap <C-s> :w<CR>h
 
-		" why so shifty?
-		nnoremap ; :
-		" also, UNLEARN!
-		nnoremap : <nop>
-
 		" CTRL+space now opens completion options
 		inoremap <C-space> <C-x><C-o>
 
 		" <C-c> enters an empty line
 		inoremap <C-c> <CR><Esc>O
+
+		" swap ` and ', because I rarely want to go to just the line of a mark
+		" and also backtick is annoying to get to for my tiny fingers
+		nnoremap ' `
+		nnoremap ` '
 	" }
 	" Leader Shortcuts {
 		nnoremap <leader>u :GundoToggle<CR>
@@ -328,20 +330,33 @@
 		nnoremap <leader>s :mksession<CR>
 
 		" toggles display of hidden characters such as tabs and line ends
-		nnoremap <leader>l :set list!<CR>
+		" nnoremap <leader>l :set list!<CR>
+
+		" window movement
+		nnoremap <C-J> <C-W><Down>
+		nnoremap <C-K> <C-W><Up>
+		nnoremap <C-H> <C-W><Left>
+		nnoremap <C-L> <C-W><Right>
+
+		nnoremap <leader>t :tabnext<CR>
+		nnoremap <leader>T :tabprev<CR>
+
+
 		" open ag.vim
 		" nnoremap <leader>a :Ag
 
 		nnoremap <leader>r :set relativenumber!<cr>
 
 		" NERDtree toggle
-		nnoremap <leader>n :NERDTreeToggle<CR>
+		nnoremap <leader>nt :NERDTreeToggle<CR>
 
 		" quickly change to next window
 		nnoremap <leader>w <C-w><C-w>
 
 		" quickly change to next buffer
 		nnoremap <leader>b :bn<CR>
+		nnoremap <leader>B :bp<CR>
+		nnoremap <leader>db :bp<CR>:bd #<CR>
 
 		" easily access system clipboard buffer
 		vnoremap <Leader>y "+y
@@ -354,8 +369,8 @@
 		vnoremap <Leader>P "+P
 
 		" move lines up and down
-		nnoremap <leader>lj :m .+1<CR>==
-		nnoremap <leader>lk :m .-2<CR>==
+		" nnoremap <leader>lj :m .+1<CR>==
+		" nnoremap <leader>lk :m .-2<CR>==
 		inoremap <leader>lj <Esc>:m .+1<CR>==gi
 		inoremap <leader>lk <Esc>:m .-2<CR>==gi
 		vnoremap <leader>lj :m '>+1<CR>gv=gv
@@ -371,9 +386,9 @@
 " Plugin Configs {
 	" CtrlP {
 		let g:ctrlp_working_path_mode = 'ra'
-		let g:ctrlp_match_window = 'bottom,order:ttb'
-		let g:ctrlp_switch_buffer = 0
-		let g:ctrlp_working_path_mode = 0
+		let g:ctrlp_match_window = 'bottom,order:btt'
+		let g:ctrlp_switch_buffer = 'e'
+		" let g:ctrlp_working_path_mode = 0
 
 		set wildignore+=*\\QuorumCES\\build\\*
 
@@ -520,9 +535,9 @@
 		endif
 		return a:action
 	endfunction
-	inoremap <silent><tab> <C-R>=OmniPopup('tab')<CR>
-	" inoremap <silent>j <C-R>=OmniPopup('j')<CR>
-	" inoremap <silent>k <C-R>=OmniPopup('k')<CR>
+	inoremap <silent><leader><tab> <C-R>=OmniPopup('tab')<CR>
+	inoremap <silent>jj <C-R>=OmniPopup('j')<CR>
+	inoremap <silent>kk <C-R>=OmniPopup('k')<CR>
 	" }
 
 	" :Reg shows the list of recent registers. Entering the register name
